@@ -9,9 +9,7 @@ export default class Presenter {
   eventsList = new EventsListView();
   sortingComponent = new SortingView();
 
-  constructor({
-    tripEventsContainer
-  }) {
+  constructor({ tripEventsContainer }) {
     this.tripEventsContainer = tripEventsContainer;
   }
 
@@ -25,4 +23,3 @@ export default class Presenter {
     }
   }
 }
-
