@@ -1,15 +1,27 @@
+import { getRandomValue } from '../utils';
+
+//описание пункта назначения
 export default class OffersModel {
-  constructor(service) {
-    this.service = service;
-    this.offers = this.service.getOffers();
+  #service = null;
+  #offers = null;
+
+  constructor(service){
+    this.#service = service;
+    this.#offers = this.#service.offers;
   }
 
-  get() {
-    return this.offers;
+
+  get offers(){
+    return this.#offers;
   }
 
-  getById(type) {
-    return this.offers
-      .find((offer) => offer.type === type).offers;
+
+  getByType(type){
+    return this.#offers.find((offer) => offer.type === type).offers;
   }
+
+  getRandomOffer(){
+    return getRandomValue(this.#offers);
+  }
+
 }
