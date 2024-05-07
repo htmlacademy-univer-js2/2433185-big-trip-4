@@ -1,26 +1,19 @@
-import { getRandomValue } from '../utils';
+import { generateDestination } from '../mock/destination.js';
 
-//модели пункта назначения
-export default class DestinationsModel{
-  #service = null;
-  #destinations = null;
+const DESTINATION_COUNT = 5;
 
-  constructor(service){
-    this.#service = service;
-    this.#destinations = this.#service.destinations;
+export default class DestinationsModel {
+
+  constructor() {
+    this.destinations = Array.from({ length: DESTINATION_COUNT }, generateDestination);
   }
 
-
-  get destinations(){
-    return this.#destinations;
+  get() {
+    return this.destinations;
   }
 
-
-  getByID(id){
-    return this.#destinations.find((destination) => destination.id === id);
+  getById(id) {
+    return this.destinations.find((destination) => destination.id === id);
   }
 
-  getRandomDestination(){
-    return getRandomValue(this.#destinations);
-  }
 }

@@ -1,27 +1,22 @@
-import { getRandomValue } from '../utils';
+import { POINT_TYPES } from '../const.js';
+import { generateOffersByType } from '../mock/offer.js';
 
-//описание пункта назначения
 export default class OffersModel {
-  #service = null;
-  #offers = null;
 
-  constructor(service){
-    this.#service = service;
-    this.#offers = this.#service.offers;
+  constructor() {
+    this.offers = POINT_TYPES.map((type) => generateOffersByType(type));
   }
 
-
-  get offers(){
-    return this.#offers;
+  get() {
+    return this.offers;
   }
 
-
-  getByType(type){
-    return this.#offers.find((offer) => offer.type === type).offers;
+  getByType(type) {
+    return this.offers.find((offersList) => offersList.type === type).offers;
   }
 
-  getRandomOffer(){
-    return getRandomValue(this.#offers);
+  getById(type, id) {
+    return this.getByType(type).offers.find((offer) => offer.if === id).offers;
   }
 
 }

@@ -1,21 +1,26 @@
-import { CITIES, DESCRIPTION } from './const';
-import { getRandomInteger, getRandomValue } from '../utils.js';
-//нходим случайны город
-function getDestination(){
-  const city = getRandomValue(CITIES);
+import { getRandomInteger, shuffle } from '../utils/common.js';
+import { CITIES, DESCRIPTION } from './const.js';
 
-  //структура пункта назначения
+
+const cities = shuffle([...CITIES]);
+
+function generateDestination() {
+  const city = cities.pop();
+  const maxPictures = 5;
+
   return {
     id: crypto.randomUUID(),
-    description: DESCRIPTION,
     name: city,
-    pictures: Array.from({length: getRandomInteger(1, 5)}, () => ({
+    description: `${city} description: ${DESCRIPTION}`,
+    pictures: Array.from({ length: getRandomInteger(0, maxPictures) }, generatePicture),
+  };
+
+  function generatePicture() {
+    return {
       'src': `https://loremflickr.com/248/152?random=${crypto.randomUUID()}`,
       'description': `${city} description`
-    }))
-  };
+    };
+  }
 }
 
-export {
-  getDestination
-};
+export { generateDestination };
