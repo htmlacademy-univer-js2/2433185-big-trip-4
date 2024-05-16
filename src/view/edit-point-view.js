@@ -1,10 +1,10 @@
-import AbstractView from '../framework/view/abstract-view.js';
+//import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { formatDateToDateTime } from '../utils/point.js';
 import { POINT_TYPES, POINT_EMPTY } from '../const.js';
 import { capitalizeFirstLetter } from '../utils/common.js';
 
-export default class EditPointView extends AbstractView {
-  #point = null;
+export default class EditPointView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -12,37 +12,109 @@ export default class EditPointView extends AbstractView {
 
   constructor({ point = POINT_EMPTY, destinations, offers, onFormSubmit, onFormCancel }) {
     super();
-    this.#point = point;
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleFormCancel = onFormCancel;
-    this.element.querySelector('form')
-      .addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#formCancelHandler);
+
+    this._setState(EditPointView.parsePointToState({point}));
+
+    this._restoreHandlers();
   }
 
   get template() {
     return createEditPointViewTemplate({
-      point: this.#point,
+      state: this._state,
       destinations: this.#destinations,
       offers: this.#offers
     });
   }
 
+  reset = (point) => this.updateElement({point});
+
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit();
+    this.#handleFormSubmit(EditPointView.parseStateToPoint(this._state));
   };
 
   #formCancelHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormCancel();
   };
+
+  #typeChangeHandler = (evt) => {
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        type:evt.target.value,
+        offers: []
+      }
+    });
+  };
+
+  #destinationChangeHandler = (evt) => {
+    const selectedDestination = this.#destinations
+      .find((pointDestination) => pointDestination.name === evt.target.value);
+
+    const selectedDestinationId = (selectedDestination)
+      ? selectedDestination.id
+      : null;
+
+    this.updateElement({
+      point: {
+        ...this._state.point,
+        destination: selectedDestinationId
+      }
+    });
+  };
+
+  #offerChangeHandler = () => {
+    const checkedBoxes = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'));
+
+    this._setState({
+      point: {
+        ...this._state.point,
+        offers: checkedBoxes.map((element) => element.dataset.offerId)
+      }
+    });
+  };
+
+  #priceChangeHandler = (evt) => {
+    this._setState({
+      point: {
+        ...this._state.point,
+        basePrice: evt.target.valueAsNumber
+      }
+    });
+  };
+
+  static parsePointToState = ({point}) => ({point});
+  static parseStateToPoint = (state) => state.point;
+
+  _restoreHandlers = () => {
+    this.element.querySelector('form')
+      .addEventListener('submit', this.#formSubmitHandler);
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#formCancelHandler);
+
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#typeChangeHandler);
+
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#destinationChangeHandler);
+
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('change', this.#offerChangeHandler);
+
+    this.element.querySelector('.event__input--price')
+      .addEventListener('change', this.#priceChangeHandler);
+  };
 }
 
-function createEditPointViewTemplate({ point, destinations, offers }) {
+
+function createEditPointViewTemplate({state, destinations, offers }) {
+  const {point} = state;
   const { id, type, offers: selectedOffersIds, destination: destinationId, basePrice, dateFrom, dateTo } = point;
   const selectedDestination = destinations.find((destination) => destination.id === destinationId);
   const suitableOffers = offers.find((offer) => offer.type === type).offers;
