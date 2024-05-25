@@ -1,47 +1,97 @@
-import { POINT_TYPES } from '../const.js';
-import { generatePoint } from '../mock/point.js';
-import { getRandomInteger, getRandomValue } from '../utils/common.js';
-//import Observable from '../framework/observable.js';
+import Observable from '../framework/observable.js';
+import { UpdateType } from '../const.js';
 
-
-export default class PointsModel {
+export default class pointsModel extends Observable {
+  #pointsApiService = null;
   #points = [];
-  #service = null;
 
-  constructor(destinationsModel, offersModel) {
-    const pointCount = { MIN: 0, MAX: 5 };
-
-    this.points = Array.from({ length: getRandomInteger(pointCount.MIN, pointCount.MAX) }, () => {
-      const destination = getRandomValue(destinationsModel.get());
-      const type = getRandomValue(POINT_TYPES);
-      const offers = offersModel.getByType(type).slice(0, getRandomInteger(0, 3));
-      return generatePoint(destination.id, type, offers.map((offer) => offer.id));
-    });
+  constructor(pointsApiService) {
+    super();
+    this.#pointsApiService = pointsApiService;
   }
 
-  get() {
-    return this.points;
+  init = async () => {
+    try {
+      const points = await this.#pointsApiService.points;
+      this.#points = points.map(this.#adaptToClient);
+    } catch (err) {
+      this.#points = [];
+    }
+
+    this._notify(UpdateType.INIT);
+
+  };
+
+  get points() {
+    return this.#points;
   }
 
-  getById(id) {
-    return this.points.find((point) => point.id === id);
-  }
+  updatePoint = async (updateType, update) => {
+    const index = this.#points.findIndex((point) => point.id === update.id);
 
-  update(updateType, point) {
-    const updatedPoint = this.#service.updatedPoint(point);
-    //this.#points = updateItem(this.#points, updatedPoint);
-    this._notify(updateType, updatedPoint);
-  }
+    if (index === -1) {
+      throw new Error('Can\'t update unexisting point');
+    }
 
-  add(updateType, point) {
-    const addedPoint = this.#service.addPoint(point);
-    this.#points.push(addedPoint);
-    this._notify(updateType, addedPoint);
-  }
+    try {
+      const response = await this.#pointsApiService.updatePoint(update);
+      const updatedPoint = this.#adaptToClient(response);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        updatedPoint,
+        ...this.#points.slice(index + 1),
+      ];
+      this._notify(updateType, updatedPoint);
+    } catch (err) {
+      throw new Error('Can\'t update point');
+    }
+  };
 
-  delete(updateType, point) {
-    this.#service.deletePoint(point);
-    this.#points = this.points.filter((pointItem) => pointItem.id !== point.id);
-    this._notify(updateType);
-  }
+  addPoint = async (updateType, update) => {
+    try {
+      const response = await this.#pointsApiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#points.unshift(newPoint);
+      this._notify(updateType, newPoint);
+    } catch (err) {
+      throw new Error('Can\'t add point');
+    }
+  };
+
+  deletePoint = async (updateType, update) => {
+    const index = this.#points.findIndex((point) => point.id === update.id);
+
+    if (index === -1) {
+      throw new Error('Can\'t delete unexisting point');
+    }
+
+    try {
+      await this.#pointsApiService.deletePoint(update);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        ...this.#points.slice(index + 1),
+      ];
+      this._notify(updateType);
+    }
+    catch (err) {
+      throw new Error('Can\'t delete point');
+    }
+  };
+
+  #adaptToClient = (point) => {
+    const adaptedPoint = {
+      ...point,
+      basePrice: point['base_price'],
+      dateFrom: point['date_from'] !== null ? new Date(point['date_from']) : point['date_from'],
+      dateTo: point['date_to'] !== null ? new Date(point['date_to']) : point['date_to'],
+      isFavorite: point['is_favorite'],
+    };
+
+    delete adaptedPoint['base_price'];
+    delete adaptedPoint['date_from'];
+    delete adaptedPoint['date_to'];
+    delete adaptedPoint['is_favorite'];
+
+    return adaptedPoint;
+  };
 }

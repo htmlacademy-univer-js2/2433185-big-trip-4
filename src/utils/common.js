@@ -16,4 +16,6 @@ function capitalizeFirstLetter(string){
   return `${string[0].toUpperCase()}${string.slice(1)}`;
 }
 
-export { getRandomInteger, getRandomValue, shuffle, capitalizeFirstLetter };
+const isEscKeyDown = (evt) => evt.key === 'Escape' || evt.key === 'Esc';
+
+export { getRandomInteger, getRandomValue, shuffle, capitalizeFirstLetter, isEscKeyDown };

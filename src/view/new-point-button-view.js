@@ -1,31 +1,19 @@
-import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
+import AbstractView from '../framework/view/abstract-view.js';
 
-const createCreatePointButtonTemplate = (disabled) => `<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button" ${disabled ? 'disabled' : ''}>New event</button>`;
+const createNewPointButtonTemplate = () => '<button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">New event</button>';
 
-export default class CreatePointButtonView extends AbstractStatefulView {
-  #handleButtonClick = null;
-
-  constructor({ onClick, disabled = false}) {
-    super();
-    this.#handleButtonClick = onClick;
-    this._setState({ disabled });
-    this._restoreHandlers();
-  }
-
-  _restoreHandlers() {
-    this.element.addEventListener('click', this.#buttonClickHandler);
-  }
-
+export default class NewPointButtonView extends AbstractView {
   get template() {
-    return createCreatePointButtonTemplate(this._state.disabled);
+    return createNewPointButtonTemplate();
   }
 
-  setDisabled(isDisabled) {
-    this.updateElement({ disabled: isDisabled });
-  }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
 
-  #buttonClickHandler = (evt) => {
+  #clickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleButtonClick();
+    this._callback.click();
   };
 }

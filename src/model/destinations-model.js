@@ -1,19 +1,23 @@
-import { generateDestination } from '../mock/destination.js';
+import Observable from '../framework/observable.js';
 
-const DESTINATION_COUNT = 5;
+export default class DestinationsModel extends Observable {
+  #destinations = [];
+  #destinationsApiService = null;
 
-export default class DestinationsModel {
-
-  constructor() {
-    this.destinations = Array.from({ length: DESTINATION_COUNT }, generateDestination);
+  constructor(destinationsApiService) {
+    super();
+    this.#destinationsApiService = destinationsApiService;
   }
 
-  get() {
-    return this.destinations;
-  }
+  init = async () => {
+    try {
+      this.#destinations = await this.#destinationsApiService.destinations;
+    } catch (err) {
+      this.#destinations = [];
+    }
+  };
 
-  getById(id) {
-    return this.destinations.find((destination) => destination.id === id);
+  get destinations() {
+    return this.#destinations;
   }
-
 }
