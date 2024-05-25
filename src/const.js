@@ -29,7 +29,7 @@ const FilterType = {
   FUTURE: 'future',
 };
 
-const SortTypes = {
+const SortType = {
   DAY: 'day',
   EVENT: 'event',
   TIME: 'time',
@@ -38,27 +38,29 @@ const SortTypes = {
 };
 
 const ENABLED_SORT_TYPES = [
-  SortTypes.DAY, SortTypes.TIME, SortTypes.PRICE
+  SortType.DAY, SortType.TIME, SortType.PRICE
 ];
 
-const MODE = {
-  EDITING: 'EDITING',
-  CREATING: 'CREATING',
-};
 
-const USER_ACTION = {
+const UserAction = {
   UPDATE_POINT: 'UPDATE_POINT',
+  ADD_POINT: 'ADD_POINT',
   DELETE_POINT: 'DELETE_POINT',
-  CREATE_POINT: 'CREATE_POINT',
 };
 
-const UPDATE_TYPES = {
+const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const DEFAULT_TYPE = 'flight';
+
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING'
+};
 
 const BASE_POINT = {
   basePrice: 0,
@@ -70,5 +72,21 @@ const BASE_POINT = {
   type: DEFAULT_TYPE,
 };
 
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
-export { BASE_POINT, MODE,UPDATE_TYPES ,USER_ACTION ,POINT_TYPES, POINT_EMPTY, FilterType, SortTypes, ENABLED_SORT_TYPES };
+const AUTHORIZATION = 'Basic qN3Fsq53cwa4xj3z2';
+const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
+
+
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE'
+};
+
+
+export {END_POINT,AUTHORIZATION,Method,TimeLimit ,Mode , BASE_POINT,UpdateType ,UserAction ,POINT_TYPES, POINT_EMPTY, FilterType, SortType, ENABLED_SORT_TYPES };

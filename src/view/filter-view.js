@@ -1,34 +1,54 @@
-import { FilterType } from '../const.js';
 import AbstractView from '../framework/view/abstract-view.js';
-import { capitalizeFirstLetter } from '../utils/common.js';
+
+const createFilterItemTemplate = (filter, currentFilterType) => {
+  const { type, name, count } = filter;
+
+  return (
+    `<div class="trip-filters__filter">
+    <input id="filter-${name}"
+    class="trip-filters__filter-input
+    visually-hidden" type="radio"
+    name="trip-filter"
+    value="${type}"
+    ${type === currentFilterType ? 'checked' : ''}
+    ${count === 0 ? 'disabled' : ''}>
+      <label class="trip-filters__filter-label" for="filter-${name}">${name}</label>
+    </div>`
+  );
+};
+
+const createFilterTemplate = (filterItems, currentFilterType) => {
+  const filterItemsTemplate = filterItems
+    .map((filter) => createFilterItemTemplate(filter, currentFilterType))
+    .join('');
+
+  return `<form class="trip-filters" action="#" method="get">
+    ${filterItemsTemplate}
+    <button class="visually-hidden" type="submit">Accept filter</button>
+    </form>`;
+};
 
 export default class FilterView extends AbstractView {
-  #activeFilters = [];
-  #selected = null;
+  #filters = null;
+  #currentFilter = null;
 
-  constructor({ activeFilters, selectedFilter }) {
+  constructor(filters, currentFilterType) {
     super();
-    this.#activeFilters = activeFilters;
-    this.#selected = selectedFilter;
+    this.#filters = filters;
+    this.#currentFilter = currentFilterType;
   }
 
   get template() {
-    return createFilterTemplate({ activeFilters: this.#activeFilters, selected: this.#selected });
+    return createFilterTemplate(this.#filters, this.#currentFilter);
   }
-}
 
-function createFilterTemplate({ activeFilters, selected }) {
-  return /* html */`
-    <form class="trip-filters" action="#" method="get">
-      ${Object.values(FilterType).map((filter) => createFilter(filter, activeFilters.includes(filter), filter === selected)).join('')}
-      <button class="visually-hidden" type="submit">Accept filter</button>
-    </form>`;
+  setFilterTypeChangeHandler = (callback) => {
+    this._callback.filterTypeChange = callback;
+    this.element.addEventListener('change', this.#filterTypeChangeHandler);
+  };
 
-  function createFilter(filter, enabled, checked) {
-    return /* html */`
-      <div class="trip-filters__filter">
-        <input id="filter-${filter}" class="trip-filters__filter-input  visually-hidden" type="radio" name="trip-filter" value="${filter}"${enabled || checked ? '' : 'disabled'} ${checked ? 'checked' : ''}>
-        <label class="trip-filters__filter-label" for="filter-${filter}">${capitalizeFirstLetter(filter)}</label>
-      </div>`;
-  }
+  #filterTypeChangeHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.filterTypeChange(evt.target.value);
+  };
 }
