@@ -1,5 +1,5 @@
-import ApiService from '../framework/api-service.js';
-import { Method } from '../const.js';
+import ApiService from '../framework/api-service';
+import { Method } from '../const';
 
 export default class PointsApiService extends ApiService {
   get points() {
@@ -7,17 +7,7 @@ export default class PointsApiService extends ApiService {
       .then(ApiService.parseResponse);
   }
 
-  get offers() {
-    return this._load({ url: 'offers' })
-      .then(ApiService.parseResponse);
-  }
-
-  get destinations() {
-    return this._load({ url: 'destinations' })
-      .then(ApiService.parseResponse);
-  }
-
-  addPoint = async (point) => {
+  async addPoint(point) {
     const response = await this._load({
       url: 'points',
       method: Method.POST,
@@ -28,18 +18,18 @@ export default class PointsApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
-  };
+  }
 
-  deletePoint = async (point) => {
+  async deletePoint(point) {
     const response = await this._load({
       url: `points/${point.id}`,
       method: Method.DELETE,
     });
 
     return response;
-  };
+  }
 
-  updatePoint = async (point) => {
+  async updatePoint(point) {
     const response = await this._load({
       url: `points/${point.id}`,
       method: Method.PUT,
@@ -50,14 +40,14 @@ export default class PointsApiService extends ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
-  };
+  }
 
-  #adaptToServer = (point) => {
+  #adaptToServer(point) {
     const adaptedPoint = {
       ...point,
-      'base_price': Number(point.basePrice),
-      'date_from': point.dateFrom instanceof Date ? point.dateFrom.toISOString() : null,
-      'date_to': point.dateTo instanceof Date ? point.dateTo.toISOString() : null,
+      'base_price': point.basePrice,
+      'date_from': point.dateFrom,
+      'date_to': point.dateTo,
       'is_favorite': point.isFavorite,
     };
 
@@ -67,5 +57,5 @@ export default class PointsApiService extends ApiService {
     delete adaptedPoint.isFavorite;
 
     return adaptedPoint;
-  };
+  }
 }
