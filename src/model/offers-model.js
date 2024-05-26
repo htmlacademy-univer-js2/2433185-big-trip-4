@@ -1,31 +1,29 @@
-import Observable from '../framework/observable.js';
-import { UpdateType } from '../const.js';
+import Observable from '../framework/observable';
 
 export default class OffersModel extends Observable {
   #offers = [];
   #offersApiService = null;
 
-  constructor(offersApiService) {
+  constructor({offersApiService}) {
     super();
     this.#offersApiService = offersApiService;
   }
-
-  init = async () => {
-    try {
-      this.#offers = await this.#offersApiService.offers;
-      this.#offers = this.offers;
-      this._notify(UpdateType.INIT, {data: this.offers});
-    } catch (err) {
-      this.#offers = [];
-      this._notify(UpdateType.INIT, {error: err});
-    }
-  };
 
   get offers() {
     return this.#offers;
   }
 
   getByType(type) {
-    return this.#offers.find((offers) => offers.type === type.toLowerCase()).offers;
+    return this.offers.find((offer) => (offer.type === type))?.offers;
+  }
+
+  async init() {
+    try {
+      const offers = await this.#offersApiService.offers;
+      this.#offers = offers;
+    }
+    catch (err) {
+      this.#offers = [];
+    }
   }
 }
