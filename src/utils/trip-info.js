@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { sortDay } from '../utils/sort';
+import { sortTaskByDay } from '../utils/sort';
 
 function getInfofromPoints({ points, destinations, offers }) {
   if (!points || !destinations || !offers) {
@@ -9,7 +9,7 @@ function getInfofromPoints({ points, destinations, offers }) {
       total: 0
     };
   }
-  const sortedPoints = [...points.sort(sortDay)];
+  const sortedPoints = [...points.sort(sortTaskByDay)];
   const arrayOfDestinations = [];
   let sumOfTrip = 0;
   sortedPoints.forEach((point) => {

@@ -4,7 +4,7 @@ import EmptyListView from '../view/empty-list-view';
 import PointPresenter from './point-presenter';
 import NewPointPresenter from './new-point-presenter';
 import { SortType, TimeLimit, UserAction, UpdateType, FilterType } from '../const';
-import { sortDay, sortTime, sortPrice } from '../utils/sort';
+import { sortTaskByDay, sortTaskByDuration, sortTaskByPrice} from '../utils/sort';
 import { filter } from '../utils/filter';
 import LoadingView from '../view/loading-view';
 import UiBlocker from '../framework/ui-blocker/ui-blocker';
@@ -69,11 +69,11 @@ export default class BoardPresenter {
 
     switch (this.#currentSortType) {
       case SortType.DAY:
-        return filteredPoints.sort(sortDay);
+        return filteredPoints.sort(sortTaskByDay);
       case SortType.PRICE:
-        return filteredPoints.sort(sortPrice);
+        return filteredPoints.sort(sortTaskByPrice);
       case SortType.TIME:
-        return filteredPoints.sort(sortTime);
+        return filteredPoints.sort(sortTaskByDuration);
     }
 
     return filteredPoints;

@@ -17,13 +17,13 @@ function getWeightForNullDate(dateA, dateB) {
   return null;
 }
 
-function sortDay(pointA, pointB) {
+function sortTaskByDay(pointA, pointB) {
   const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
 
   return weight ?? dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 }
 
-function sortTime(pointA, pointB) {
+function sortTaskByDuration(pointA, pointB) {
   const weight = getWeightForNullDate(pointA.dateFrom, pointB.dateFrom);
   const durationA = getDurationNF(pointA.dateFrom, pointA.dateTo);
   const durationB = getDurationNF(pointB.dateFrom, pointB.dateTo);
@@ -41,7 +41,7 @@ function sortTime(pointA, pointB) {
   }
 }
 
-function sortPrice(pointA, pointB) {
+function sortTaskByPrice(pointA, pointB) {
   const diff = pointA.basePrice - pointB.basePrice;
   if (diff > 0) {
     return -1;
@@ -52,4 +52,4 @@ function sortPrice(pointA, pointB) {
   }
 }
 
-export { sortDay, sortTime, sortPrice };
+export { sortTaskByDay, sortTaskByDuration, sortTaskByPrice };
