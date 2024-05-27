@@ -49,7 +49,7 @@ const TimeLimit = {
   UPPER_LIMIT: 1000,
 };
 
-const AUTHORIZATION = 'Basic eo0w790ik29889a';
+const AUTHORIZATION = 'Basic eo3w610ik25874a';
 const END_POINT = 'https://21.objects.htmlacademy.pro/big-trip';
 
 export { Mode ,TimeLimit, END_POINT, AUTHORIZATION, POINT_TYPES, SortType, FilterType, UserAction, EditingType, UpdateType, Method };
